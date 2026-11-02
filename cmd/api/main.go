@@ -2,7 +2,9 @@ package api
 
 import (
 	"log"
-	"net/http"
+	"managment-tasks/internal/handler"
+	"managment-tasks/internal/repository"
+	"managment-tasks/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,10 +12,11 @@ import (
 func main() {
 
 	r := gin.Default()
+	repo := repository.NewMemoryTaskRepository()
+	service := service.NewTaskService(repo)
+	handler := handler.NewTaskHandler(service)
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "pong"})
-	})
+	r.GET("/all", handler.GetAllTasks)
 
 	err := r.Run(":8080")
 
