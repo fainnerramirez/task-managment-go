@@ -16,7 +16,10 @@ func main() {
 	service := service.NewTaskService(repo)
 	handler := handler.NewTaskHandler(service)
 
-	r.GET("/all", handler.GetAllTasks)
+	r.GET("/tasks", handler.GetAllTasks)
+	r.POST("/tasks", handler.CreateTask)
+	r.PUT("/tasks/:id", handler.UpdateTask)
+	r.DELETE("/tasks/:id", handler.DeleteTask)
 
 	err := r.Run(":8080")
 

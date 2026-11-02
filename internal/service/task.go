@@ -35,3 +35,7 @@ func (s *TaskService) ListTasks() ([]*entities.Task, error) {
 func (s *TaskService) UpdateTask(task *entities.Task) error {
 	return s.repo.Update(task)
 }
+
+func (s *TaskService) DeleteTask(id int) error {
+	return s.repo.Delete(id)
+}
