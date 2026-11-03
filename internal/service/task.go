@@ -1,15 +1,16 @@
 package service
 
 import (
+	"database/sql"
 	"managment-tasks/internal/entities"
 )
 
 type TaskRepository interface {
-	Create(task *entities.Task) error
-	GetByID(id int) (*entities.Task, error)
-	List() ([]*entities.Task, error)
-	Update(task *entities.Task) error
-	Delete(id int) error
+	Create(db *sql.DB, task *entities.Task) error
+	GetByID(db *sql.DB, id int) (*entities.Task, error)
+	List(db *sql.DB) ([]*entities.Task, error)
+	Update(db *sql.DB, task *entities.Task) error
+	Delete(db *sql.DB, id int) error
 }
 
 type TaskService struct {
@@ -20,22 +21,22 @@ func NewTaskService(repo TaskRepository) *TaskService {
 	return &TaskService{repo: repo}
 }
 
-func (s *TaskService) CreateTask(task *entities.Task) error {
-	return s.repo.Create(task)
+func (s *TaskService) CreateTask(db *sql.DB, task *entities.Task) error {
+	return s.repo.Create(db, task)
 }
 
-func (s *TaskService) GetTaskByID(id int) (*entities.Task, error) {
-	return s.repo.GetByID(id)
+func (s *TaskService) GetTaskByID(db *sql.DB, id int) (*entities.Task, error) {
+	return s.repo.GetByID(db, id)
 }
 
-func (s *TaskService) ListTasks() ([]*entities.Task, error) {
-	return s.repo.List()
+func (s *TaskService) ListTasks(db *sql.DB) ([]*entities.Task, error) {
+	return s.repo.List(db)
 }
 
-func (s *TaskService) UpdateTask(task *entities.Task) error {
-	return s.repo.Update(task)
+func (s *TaskService) UpdateTask(db *sql.DB, task *entities.Task) error {
+	return s.repo.Update(db, task)
 }
 
-func (s *TaskService) DeleteTask(id int) error {
-	return s.repo.Delete(id)
+func (s *TaskService) DeleteTask(db *sql.DB, id int) error {
+	return s.repo.Delete(db, id)
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"database/sql"
 	"net/http"
 	"strconv"
 
@@ -18,8 +19,8 @@ func NewTaskHandler(service *service.TaskService) *TaskHandler {
 	return &TaskHandler{service: service}
 }
 
-func (h *TaskHandler) GetAllTasks(c *gin.Context) {
-	tasks, err := h.service.ListTasks()
+func (h *TaskHandler) GetAllTasks(db *sql.DB, c *gin.Context) {
+	tasks, err := h.service.ListTasks(db)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -28,14 +29,14 @@ func (h *TaskHandler) GetAllTasks(c *gin.Context) {
 	c.JSON(http.StatusOK, tasks)
 }
 
-func (h *TaskHandler) CreateTask(c *gin.Context) {
+func (h *TaskHandler) CreateTask(db *sql.DB, c *gin.Context) {
 	var task entities.Task
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.service.CreateTask(&task); err != nil {
+	if err := h.service.CreateTask(db, &task); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -43,13 +44,13 @@ func (h *TaskHandler) CreateTask(c *gin.Context) {
 	c.JSON(http.StatusCreated, task)
 }
 
-func (h *TaskHandler) GetTaskByID(c *gin.Context) {
+func (h *TaskHandler) GetTaskByID(db *sql.DB, c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
 		return
 	}
-	task, err := h.service.GetTaskByID(id)
+	task, err := h.service.GetTaskByID(db, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -61,14 +62,14 @@ func (h *TaskHandler) GetTaskByID(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-func (h *TaskHandler) UpdateTask(c *gin.Context) {
+func (h *TaskHandler) UpdateTask(db *sql.DB, c *gin.Context) {
 	var task entities.Task
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.service.UpdateTask(&task); err != nil {
+	if err := h.service.UpdateTask(db, &task); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -76,7 +77,7 @@ func (h *TaskHandler) UpdateTask(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-func (h *TaskHandler) DeleteTask(c *gin.Context) {
+func (h *TaskHandler) DeleteTask(db *sql.DB, c *gin.Context) {
 
 	id, err := strconv.Atoi(c.Param("id"))
 
@@ -85,7 +86,7 @@ func (h *TaskHandler) DeleteTask(c *gin.Context) {
 		return
 	}
 
-	if err := h.service.DeleteTask(id); err != nil {
+	if err := h.service.DeleteTask(db, id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

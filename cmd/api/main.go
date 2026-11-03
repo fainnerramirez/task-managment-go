@@ -21,14 +21,14 @@ func main() {
 
 	r := gin.Default()
 
-	repo := repository.NewMemoryTaskRepository()
+	repo := repository.NewSQLiteTaskRepository()
 	service := service.NewTaskService(repo)
 	handler := handler.NewTaskHandler(service)
 
-	r.GET("/tasks", handler.GetAllTasks)
-	r.POST("/tasks", handler.CreateTask)
-	r.PUT("/tasks/:id", handler.UpdateTask)
-	r.DELETE("/tasks/:id", handler.DeleteTask)
+	r.GET("/tasks", func(c *gin.Context) { handler.GetAllTasks(db, c) })
+	r.POST("/tasks", func(c *gin.Context) { handler.CreateTask(db, c) })
+	r.PUT("/tasks/:id", func(c *gin.Context) { handler.UpdateTask(db, c) })
+	r.DELETE("/tasks/:id", func(c *gin.Context) { handler.DeleteTask(db, c) })
 
 	err := r.Run(":8080")
 
