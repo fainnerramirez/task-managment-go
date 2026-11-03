@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"managment-tasks/internal/database"
 	"managment-tasks/internal/handler"
 	"managment-tasks/internal/repository"
 	"managment-tasks/internal/service"
@@ -11,7 +12,15 @@ import (
 
 func main() {
 
+	db, errDB := database.InitializeDatabase()
+	if errDB != nil {
+		log.Fatal(errDB.Error())
+	}
+
+	defer db.Close()
+
 	r := gin.Default()
+
 	repo := repository.NewMemoryTaskRepository()
 	service := service.NewTaskService(repo)
 	handler := handler.NewTaskHandler(service)
